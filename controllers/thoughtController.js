@@ -1,15 +1,15 @@
-const { User, Thought } = require("../models");
+const { User, Thoughts } = require("../models");
 const Reaction = require("../models/Reaction")
 module.exports = {
 	
 	getThoughts(req, res) {
-		Thought.find()
+		Thoughts.find()
 			.then((thoughtData) => res.json(thoughtData))
 			.catch((err) => res.status(500).json(err));
 	},
 	
 	getSingleThought(req, res) {
-		Thought.findOne({ _id: req.params.Id })
+		Thoughts.findOne({ _id: req.params.thoughtId })
 			.select("-__v")
 			.then((thoughtData) =>
 				!thoughtData
@@ -20,7 +20,7 @@ module.exports = {
 	},
 	
 	createThought(req, res) {
-		Thought.create(req.body)
+		Thoughts.create(req.body)
 			.then((thoughtData) => res.json(thoughtData))
 			.catch((err) => {
 				console.log(err);
@@ -29,18 +29,18 @@ module.exports = {
 	},
 	
 	deleteThought(req, res) {
-		Thought.findOneAndDelete({ _id: req.params.Id })
+		Thoughts.findOneAndDelete({ _id: req.params.thoughtId })
 			.then((thoughtData) =>
 				!thoughtData
 					? res.status(404).json({ message: "No user with that ID" })
-					: Thought.deleteMany({ _id: { $in: User.thoughts } })
+					: Thoughts.deleteMany({ _id: { $in: User.thoughts } })
 			)
 			.then(() => res.json({ message: "user and thoughts deleted!" }))
 			.catch((err) => res.status(500).json(err));
 	},
 	
 	updateThought(req, res) {
-		Thought.findOneAndUpdate(
+		Thoughts.findOneAndUpdate(
 			{ _id: req.params.Id },
 			{ $set: req.body },
 			{ runValidators: true, new: true }
@@ -54,7 +54,7 @@ module.exports = {
 	},
 	addReaction(req, res) {
 		Reaction.create(req.body).then((reaction)=> 
-		Thought.findOneAndUpdate(
+		Thoughts.findOneAndUpdate(
 			{ _id: req.params.thoughtId },
 			{ $addToSet: {reaction: reaction._id }},
 			{ runValidators: true, new: true }
@@ -67,8 +67,8 @@ module.exports = {
 			.catch((err) => res.status(500).json(err)));
 	},
 	removeReaction(req, res) {
-		Reaction.findOneAndRemove(req.params.ReactionId).then((reaction)=>
-		Thought.findOneAndUpdate(
+		Reaction.findOneAndRemove(req.params.reactionId).then((reaction)=>
+		Thoughts.findOneAndUpdate(
 			{ _id: req.params.userId },
 			{ $pull: {reaction:{$in: req.params.reactionId}} },
 			{ runValidators: true, new: true }

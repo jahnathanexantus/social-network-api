@@ -4,7 +4,7 @@ const { Schema, model } = require("mongoose");
 const reactionSchema = new Schema({
 	reactionId: {
 		type: String,
-		required: true,
+		required: false,
 		
 	},
 	reactionBody: {
@@ -33,6 +33,6 @@ const reactionSchema = new Schema({
 }
 )
 
-const Thoughts = model("Reaction", reactionSchema);
+const Reaction = model("Reaction", reactionSchema);
 
-module.exports = Thoughts;
+module.exports = Reaction;
